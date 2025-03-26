@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario de Biología</title>
+    <style>
+        /* Reset de márgenes y padding */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Fondo general de la página */
+        body {
+            background-color: #1e1e1e;  /* Gris oscuro suave, no negro puro */
+            color: #fff;  /* Texto blanco para todo el contenido */
+            font-family: Arial, sans-serif;
+        }
+
+        /* Estilo del contenedor principal */
+        .quiz-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 15px;
+            background-color: #2a2a2a;  /* Gris oscuro para el contenedor */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Estilo del título */
+        .quiz-container h1 {
+            font-size: 33px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #fff;  /* Color blanco para el título */
+        }
+
+        /* Estilo de las preguntas */
+        .question p {
+            font-size: 20px;
+            color: #fff;  /* Color blanco para el texto de las preguntas */
+            margin-bottom: 25px;
+            background-color: #444;  /* Gris más claro para las preguntas */
+            border-radius: 5px;
+            padding: 15px;
+            line-height: 1.5;
+            font-weight: bold;
+        }
+
+        h {
+            margin-top: 5px;
+            display: block;
+            font-size: 18px;
+            color: #fff;  /* Color blanco */
+            margin-bottom: 25px;
+            border-radius: 5px;
+        }
+
+        /* Estilos para las respuestas correctas e incorrectas */
+        .correct {
+            background-color: #54aa56; /* Verde */
+        }
+
+        .incorrect {
+            background-color: #EF5555; /* Rojo */
+        }
+
+        .highlight-correct {
+            background-color: #81af82; /* Verde opaco */
+        }
+
+        /* Estilo general de las opciones */
+        .options label {
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background-color 0.3s, padding 0.3s;
+            color: #fff;
+        }
+
+        /* Efecto hover */
+        .options label:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 10px 18px;
+        }
+
+        /* Estilizar los checkboxes */
+        .options input[type="checkbox"] {
+            appearance: none; /* Oculta el checkbox original */
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-radius: 50%; /* Hace que el checkbox sea un círculo */
+            margin-right: 10px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        /* Efecto cuando el checkbox está marcado */
+        .options input[type="checkbox"]:checked {
+            background-color: white; /* Color de fondo al marcar */
+            border-color: white;
+        }
+
+        /* Agregar un "✔" dentro del círculo cuando está marcado */
+        .options input[type="checkbox"]:checked::after {
+            content: "✔";
+            font-size: 14px;
+            color: black;
+            position: absolute;
+            left: 2px;
+            top: -2px;
+            font-weight: bold;
+        }
+
+        /* Efecto hover sobre el checkbox */
+        .options input[type="checkbox"]:hover {
+            transform: scale(1.2);
+        }
+
+        /* Estilo del botón */
+        button {
+            padding: 10px 20px;  /* Añadir más espacio para un botón más grande */
+            margin-top: 10px;  /* Ajustar el margen superior */
+            display: inline-block;
+            font-size: 18px;
+            font-weight: bold;  /* Hacer el texto más prominente */
+            color: #fff;  /* Cambiar el color del texto a blanco */
+            background-color: #26A8D8;  /* Color de fondo azul */
+            border: none;  /* Eliminar el borde por defecto */
+            border-radius: 8px;  /* Esquinas más redondeadas */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  /* Sombra suave para un efecto flotante */
+            cursor: pointer;  /* Cambiar el cursor al pasar por encima */
+            transition: background-color 0.3s, transform 0.2s;  /* Transiciones suaves */
+        }
+
+        button:hover {
+            background-color: #2BA2D0;  /* Color ligeramente más oscuro cuando el ratón está encima */
+            transform: translateY(-2px);  /* Efecto de elevación */
+        }
+
+        button:active {
+            background-color: #2B8EB5;  /* Color aún más oscuro cuando se presiona */
+            transform: translateY(0);  /* Vuelve a la posición normal al hacer clic */
+        }
+
+        button:focus {
+            outline: none;  /* Eliminar el contorno azul por defecto */
+        }
+
+        strong {
+            font-size: 20px;
+            line-height: 1.5;
+        }
+
+        .columns {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .column {
+            width: 40%;
+            position: relative;
+        }
+
+        .column ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .column li {
+            background-color: #444;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            text-align: center;
+            position: relative;
+        }
+
+        .column li.selected {
+            border: 2px solid #fff;
+        }
+
+        .column-left li::before {
+            content: attr(data-label);
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--color);
+            color: #fff;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .column-right li.highlighted {
+            background-color: var(--color);
+            color: #fff;
+        }
+
+
+        .result-mark {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%; /* Hace el círculo */
+            display: inline-block;
+            margin-right: 10px; /* Espacio entre el círculo y la casilla */
+        }
+
+        #column-right li {
+            display: flex;
+            align-items: center; /* Alineación vertical */
+        }
+
+        #column-right li .right-column {
+            display: flex;
+            align-items: center;
+        }
+
+        #column-right li .right-column input {
+            margin-left: 8px; /* Espacio entre el círculo y la casilla */
+        }
+
+
+        /* Estilos para las imágenes */
+        a {
+            display: block;
+            width: 100%;  /* Asegura que el contenedor ocupe todo el ancho */
+            max-width: 100%;  /* La imagen no excede el 100% del contenedor */
+            overflow: hidden;  /* Evita que la imagen se desborde */
+            margin: 10px auto;  /* Espaciado para centrar la imagen */
+            padding: 0;
+        }
+
+        a img {
+            display: block;
+            max-width: 100%;  /* La imagen se ajusta al ancho del contenedor */
+            height: auto;  /* Mantiene las proporciones de la imagen */
+            margin: 0 auto;  /* Centra la imagen */
+        }
+
+
+
+
+
+        @media (max-width: 768px) {
+           /* Fondo general de la página */
+            body {
+                background-color: #1e1e1e;  /* Gris oscuro suave, no negro puro */
+                color: #fff;  /* Texto blanco para todo el contenido */
+                font-family: Arial, sans-serif;
+            }
+
+            /* Estilo del contenedor principal */
+            .quiz-container {
+                max-width: 800px;
+                margin: 0.9 rem auto;
+                padding: 0.9 rem;
+                background-color: #2a2a2a;  /* Gris oscuro para el contenedor */
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            /* Estilo del título */
+            .quiz-container h1 {
+                font-size: 0.9 rem;
+                margin-bottom: 0.9 rem;
+                text-align: center;
+                color: #fff;  /* Color blanco para el título */
+            }
+
+            /* Estilo de las preguntas */
+            .question p {
+                font-size: 0.9 rem;
+                color: #fff;  /* Color blanco para el texto de las preguntas */
+                margin-bottom: 0.9 rem;
+                background-color: #444;  /* Gris más claro para las preguntas */
+                border-radius: 5px;
+                padding: 0.9 rem;
+                line-height: 1.5;
+                font-weight: bold;
+            }
+
+            h {
+                margin-top: 0.9 rem;
+                display: block;
+                font-size: 0.9 rem;
+                color: #fff;  /* Color blanco */
+                margin-bottom: 0.9 rem;
+                border-radius: 5px;
+            }
+
+             /* Estilos para las respuestas correctas e incorrectas */
+                .correct {
+                    background-color: #54aa56; /* Verde */
+                }
+
+                .incorrect {
+                    background-color: #EF5555; /* Rojo */
+                }
+
+                .highlight-correct {
+                    background-color: #81af82; /* Verde opaco */
+                }
+
+                /* Estilo general de las opciones */
+                .options label {
+                    display: flex;
+                    align-items: center;
+                    font-size: 20px;
+                    border-radius: 15px;
+                    cursor: pointer;
+                    transition: background-color 0.3s, padding 0.3s;
+                    color: #fff;
+                }
+
+                /* Efecto hover */
+                .options label:hover {
+                    background-color: rgba(255, 255, 255, 0.2);
+                    padding: 10px 18px;
+                }
+
+                /* Estilizar los checkboxes */
+                .options input[type="checkbox"] {
+                    appearance: none; /* Oculta el checkbox original */
+                    width: 20px;
+                    height: 20px;
+                    border: 2px solid white;
+                    border-radius: 50%; /* Hace que el checkbox sea un círculo */
+                    margin-right: 10px;
+                    position: relative;
+                    transition: all 0.3s ease;
+                }
+
+                /* Efecto cuando el checkbox está marcado */
+                .options input[type="checkbox"]:checked {
+                    background-color: white; /* Color de fondo al marcar */
+                    border-color: white;
+                }
+
+                /* Agregar un "✔" dentro del círculo cuando está marcado */
+                .options input[type="checkbox"]:checked::after {
+                    content: "✔";
+                    font-size: 14px;
+                    color: black;
+                    position: absolute;
+                    left: 2px;
+                    top: -2px;
+                    font-weight: bold;
+                }
+
+                /* Efecto hover sobre el checkbox */
+                .options input[type="checkbox"]:hover {
+                    transform: scale(1.2);
+                }
+
+            /* Estilo del botón */
+            button {
+                padding: 0.9 rem 0.9 rem;  /* Añadir más espacio para un botón más grande */
+                margin-top: 0.9 rem;  /* Ajustar el margen superior */
+                display: inline-block;
+                font-size: 0.9 rem;
+                font-weight: bold;  /* Hacer el texto más prominente */
+                color: #fff;  /* Cambiar el color del texto a blanco */
+                background-color: #26A8D8;  /* Color de fondo azul */
+                border: none;  /* Eliminar el borde por defecto */
+                border-radius: 8px;  /* Esquinas más redondeadas */
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  /* Sombra suave para un efecto flotante */
+                cursor: pointer;  /* Cambiar el cursor al pasar por encima */
+                transition: background-color 0.3s, transform 0.2s;  /* Transiciones suaves */
+            }
+
+            button:hover {
+                background-color: #2BA2D0;  /* Color ligeramente más oscuro cuando el ratón está encima */
+                transform: translateY(-2px);  /* Efecto de elevación */
+            }
+
+            button:active {
+                background-color: #2B8EB5;  /* Color aún más oscuro cuando se presiona */
+                transform: translateY(0);  /* Vuelve a la posición normal al hacer clic */
+            }
+
+            button:focus {
+                outline: none;  /* Eliminar el contorno azul por defecto */
+            }
+
+            strong {
+                font-size: 0.9 rem;
+                line-height: 1.5;
+            }
+
+            .columns {
+                display: flex;
+                justify-content: space-between;
+                position: relative;
+            }
+
+            .column {
+                width: 40% ;
+                position: relative;
+            }
+
+            .column-right {
+                width: 45% ;
+                position: relative;
+            }
+
+            .column ul {
+                list-style: none;
+                padding: 0;
+            }
+
+            .column li {
+                background-color: #444;
+                border-radius: 0.9 rem;
+                padding: 3px;
+                margin-bottom: 3px rem;
+                cursor: pointer;
+                text-align: center;
+                position: relative;
+                font-size: 0.3 rem;
+                width: 0.9 rem;
+                height: 0.9 rem;
+            }
+
+            .column li.selected {
+                border: 2px solid #fff;
+            }
+
+            .column-left li::before {
+                content: attr(data-label);
+                position: absolute;
+                right: -30px;
+                top: 50%;
+                transform: translateY(-50%);
+                background-color: var(--color);
+                color: #fff;
+                border-radius: 50%;
+                width: 0.9 rem;
+                height: 0.9 rem;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-weight: bold;
+            }
+
+            .column-right li.highlighted {
+                background-color: var(--color);
+                color: #fff;
+            }
+
+
+            .result-mark {
+                width: 0.9 rem;
+                height: 0.9 rem;
+                border-radius: 50%; /* Hace el círculo */
+                display: inline-block;
+                margin-right: 10px; /* Espacio entre el círculo y la casilla */
+            }
+
+            #column-right li {
+                display: flex;
+                align-items: center; /* Alineación vertical */
+            }
+
+            #column-right li .right-column {
+                display: flex;
+                align-items: center;
+            }
+
+            #column-right li .right-column input {
+                margin-left: 8px; /* Espacio entre el círculo y la casilla */
+            } 
+        }
+
+        #order-selection {
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 50px;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #1e1e1e; /* Fondo claro */
+        text-align: center;
+    }
+
+    #order-selection h2 {
+        margin-bottom: 20px;
+        font-size: 24px;
+        color: #fff; /* Texto oscuro */
+    }
+
+    /* Estilo del botón Tryhard */
+    #tryhard-button {
+        background-color: #D32F2F;  /* Color de fondo rojo */
+        margin-top: 30px;  /* Mayor espacio encima */
+        display: block;  /* Hacerlo un bloque para centrarlo */
+        margin-left: auto;
+        margin-right: auto;  /* Centrar horizontalmente */
+        width: 200px;  /* Ajustar el tamaño del botón */
+    }
+
+    /* Estilo cuando se pasa el mouse por encima */
+    button:hover {
+        background-color: #2BA2D0;  /* Color ligeramente más oscuro cuando el ratón está encima */
+        transform: translateY(-2px);  /* Efecto de elevación */
+    }
+
+    /* Estilo cuando el botón es presionado */
+    button:active {
+        background-color: #2B8EB5;  /* Color aún más oscuro cuando se presiona */
+        transform: translateY(0);  /* Vuelve a la posición normal al hacer clic */
+    }
+
+    /* Eliminar contorno azul en el foco */
+    button:focus {
+        outline: none;  /* Eliminar el contorno azul por defecto */
+    }
+
+    }
+    /* Contenedor de respuestas */
+        .answers-container {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.1); /* Fondo semitransparente */
+            border-radius: 12px;
+            width: inherit; /* Hereda el ancho del contenedor padre */
+            max-width: 100%; /* Evita que sobrepase el padre */
+        }
+
+        /* Estilo de cada caja de respuesta */
+        .answer-box {
+            display: block;
+            margin-bottom: 8px;
+            padding: 12px;
+            border-radius: 10px;
+            background-color:  #1e1e1e; /* Fondo oscuro para cada respuesta */
+            color: white;
+            font-size: 18px;
+            transition: all 0.3s ease-in-out;
+            width: 100%;
+            box-sizing: border-box; /* Evita que el padding afecte el tamaño total */
+        }
+
+        /* Efecto hover: resaltar respuesta */
+        .answer-box:hover {
+            background-color: #2BA2D0; /* Azul vibrante */
+            transform: scale(1.05);
+        }
+
+        /* Efecto al seleccionar una respuesta */
+        .answer-box.selected {
+            background-color: #2B8EB5; /* Azul más fuerte */
+            font-weight: bold;
+            box-shadow: 0px 0px 8px rgba(0, 120, 255, 0.8);
+        }
+
+        /* Animación sutil al pasar entre respuestas */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .answer-box {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+
+       
+    </style>
+</head>
+<body>
+    <!-- Contenedor del cuestionario -->
+    <div id="order-selection">
+        <h2>Elige el orden de las preguntas</h2>
+        <button onclick="initializeQuiz('random')">Orden aleatorio</button>
+        <button onclick="initializeQuiz('standard')">Orden estándar</button>
+        <button id="tryhard-button" onclick="initializeQuiz('tryhard')">Modo Tryhard</button>
+    </div>
+
+    <div class="quiz-container" id="quiz-container" style="display: none;">
+
+        <h1>Cuestionario de Estudios Sociales</h1>
+        <div id="questions-container">
+
+            <!-- Pregunta 1: Selección -->
+            <div class="question">
+                <p class="question-text">¿Qué caracteriza al Estado Benefactor?</p>
+                <div class="options">
+                    <label><input type="checkbox" name="q1" value="1"> Libre mercado y privatización</label><br>
+                    <label><input type="checkbox" name="q1" value="2"> Inversión en bienestar social</label><br>
+                    <label><input type="checkbox" name="q1" value="3"> Eliminación de servicios públicos</label><br>
+                </div>
+                <button type="button" onclick="checkAnswer('q1', ['2'])">Revisar Respuesta</button>
+                <h id="result-q1"></h>
+            </div>
+
+            <!-- Pregunta 2: Selección -->
+            <div class="question">
+                <p class="question-text">¿Qué partido se alió con el gobierno de Calderón Guardia?</p>
+                <div class="options">
+                    <label><input type="checkbox" name="q2" value="1"> Partido Demócrata</label><br>
+                    <label><input type="checkbox" name="q2" value="2"> Partido Comunista</label><br>
+                    <label><input type="checkbox" name="q2" value="3"> Partido Republicano Nacional</label><br>
+                </div>
+                <button type="button" onclick="checkAnswer('q2', ['2'])">Revisar Respuesta</button>
+                <h id="result-q2"></h>
+            </div>
+
+            <!-- Pregunta 3: Emparejamiento -->
+            <div class="question">
+                <p class="question-text">Asocie los eventos con su descripción.</p>
+                <div class="columns">
+                    <div class="column column-left">
+                        <ul id="left-column-q3" data-question="q3">
+                            <li data-id="A" data-label="A" style="--color: #5f97b5;">Huelga de brazos caídos</li>
+                            <li data-id="B" data-label="B" style="--color: #a58e72;">Estado Benefactor</li>
+                            <li data-id="C" data-label="C" style="--color: #7a9b79;">Reforma Electoral</li>
+                            <li data-id="D" data-label="D" style="--color: #b16e70;">Crisis económica 1940</li>
+                        </ul>
+                    </div>
+                    <div class="column column-right" data-question="q3">
+                        <ul id="right-column-q3">
+                            <li data-id="1">Sistema que buscaba garantizar bienestar social mediante inversión pública.</li>
+                            <li data-id="2">Crisis causada por la Segunda Guerra Mundial, afectando el mercado y el desempleo.</li>
+                            <li data-id="3">Movimiento de protesta exigiendo garantías electorales.</li>
+                            <li data-id="4">Creación del Tribunal Electoral para evitar fraudes.</li>
+                        </ul>
+                    </div>
+                </div>
+                <button onclick="checkMatching('q3', [['A', '3'], ['B', '1'], ['C', '4'], ['D', '2']], 'result-q3')">Revisar Respuesta</button>
+                <h id="result-q3"></h>
+            </div>
+
+            <!-- Pregunta 4: Respuesta Corta -->
+            <div class="question">
+                <p class="question-text">Mencione dos beneficios del Estado Benefactor.</p>
+                <div class="answer-container answer-container-2"></div>
+            </div>
+
+            <!-- Pregunta 5: Desarrollo -->
+            <div class="question">
+                <p class="question-text">Explique tres factores que contribuyeron al inicio de la Guerra Civil de Costa Rica en 1948.</p>
+                <div class="answer-container answer-container-3"></div>
+            </div>
+
+            <!-- Pregunta 6: Selección -->
+            <div class="question">
+                <p class="question-text">¿Cuál de las siguientes implementaciones se ocasionó en la década de 1940?</p>
+                <div class="options">
+                    <label><input type="checkbox" name="q6" value="1"> Eliminación de impuestos a los ricos</label><br>
+                    <label><input type="checkbox" name="q6" value="2"> Creación de la Universidad de Costa Rica</label><br>
+                    <label><input type="checkbox" name="q6" value="3"> Reducción de los salarios mínimos</label><br>
+                </div>
+                <button type="button" onclick="checkAnswer('q6', ['2'])">Revisar Respuesta</button>
+                <h id="result-q6"></h>
+            </div>
+
+            <!-- Pregunta 7: Selección -->
+            <div class="question">
+                <p class="question-text">¿Qué problema económico enfrentó Costa Rica durante la Segunda Guerra Mundial?</p>
+                <div class="options">
+                    <label><input type="checkbox" name="q7" value="1"> Sobreproducción agrícola</label><br>
+                    <label><input type="checkbox" name="q7" value="2"> Cierre de mercados europeos</label><br>
+                    <label><input type="checkbox" name="q7" value="3"> Exceso de inversión extranjera</label><br>
+                </div>
+                <button type="button" onclick="checkAnswer('q7', ['2'])">Revisar Respuesta</button>
+                <h id="result-q7"></h>
+            </div>
+
+            <!-- Pregunta 8: Emparejamiento -->
+            <div class="question">
+                <p class="question-text">Relacione los personajes con sus acciones.</p>
+                <div class="columns">
+                    <div class="column column-left">
+                        <ul id="left-column-q8" data-question="q8">
+                            <li data-id="A" data-label="A" style="--color: #5f97b5;">Rafael Ángel Calderón Guardia</li>
+                            <li data-id="B" data-label="B" style="--color: #a58e72;">Teodoro Picado</li>
+                            <li data-id="C" data-label="C" style="--color: #7a9b79;">José Figueres Ferrer</li>
+                            <li data-id="D" data-label="D" style="--color: #b16e70;">Otilio Ulate</li>
+                        </ul>
+                    </div>
+                    <div class="column column-right" data-question="q8">
+                        <ul id="right-column-q8">
+                            <li data-id="1">Ganó las elecciones de 1948, pero su triunfo fue anulado, lo que llevó a la guerra civil.</li>
+                            <li data-id="2">Impulsó reformas sociales como la creación del Código de Trabajo y la CCSS.</li>
+                            <li data-id="3">Fue presidente en 1944 y enfrentó disturbios y violencia electoral.</li>
+                            <li data-id="4">Lideró la revolución de 1948 y posteriormente gobernó el país.</li>
+                        </ul>
+                    </div>
+                </div>
+                <button onclick="checkMatching('q8', [['A', '2'], ['B', '3'], ['C', '4'], ['D', '1']], 'result-q8')">Revisar Respuesta</button>
+                <h id="result-q8"></h>
+            </div>
+
+            <!-- Pregunta 9: Respuesta Corta -->
+            <div class="question">
+                <p class="question-text">Mencione dos reformas creadas durante el gobierno de Calderón Guardia.</p>
+                <div class="answer-container answer-container-2"></div>
+            </div>
+
+            <!-- Pregunta 10: Desarrollo -->
+            <div class="question">
+                <p class="question-text">Explique qué fue la huelga de brazos caídos en Costa Rica.</p>
+                <div class="answer-container answer-container-1"></div>
+            </div>
+
+            <!-- Pregunta 11: Selección -->
+            <div class="question">
+                <p class="question-text">¿Cuál fue una de las principales críticas al Estado Benefactor?</p>
+                <div class="options">
+                    <label><input type="checkbox" name="q11" value="1"> Aumentó la intervención del Estado en la economía</label><br>
+                    <label><input type="checkbox" name="q11" value="2"> Redujo las oportunidades de empleo</label><br>
+                    <label><input type="checkbox" name="q11" value="3"> Eliminó el acceso a servicios públicos</label><br>
+                </div>
+                <button type="button" onclick="checkAnswer('q11', ['1'])">Revisar Respuesta</button>
+                <h id="result-q11"></h>
+            </div>
+
+            <!-- Pregunta 12: Emparejamiento -->
+            <div class="question">
+                <p class="question-text">Relacione los conceptos con sus definiciones.</p>
+                <div class="columns">
+                    <div class="column column-left">
+                        <ul id="left-column-q12" data-question="q12">
+                            <li data-id="A" data-label="A" style="--color: #5f97b5;">Estado</li>
+                            <li data-id="B" data-label="B" style="--color: #a58e72;">Nación</li>
+                            <li data-id="C" data-label="C" style="--color: #7a9b79;">País</li>
+                            <li data-id="D" data-label="D" style="--color: #b16e70;">Gobierno</li>
+                        </ul>
+                    </div>
+                    <div class="column column-right" data-question="q12">
+                        <ul id="right-column-q12">
+                            <li data-id="1">Organización política con territorio, población y autoridad.</li>
+                            <li data-id="2">Comunidad con identidad histórica, cultural y lingüística.</li>
+                            <li data-id="3">Territorio con fronteras definidas, población y gobierno.</li>
+                            <li data-id="4">Autoridad que administra y dirige un Estado.</li>
+                        </ul>
+                    </div>
+                </div>
+                <button onclick="checkMatching('q12', [['A', '1'], ['B', '2'], ['C', '3'], ['D', '4']], 'result-q12')">Revisar Respuesta</button>
+                <h id="result-q12"></h>
+            </div>
+
+            <!-- Pregunta 14: Desarrollo -->
+            <div class="question">
+                <p class="question-text">Explique cómo la crisis económica de 1940 influyó en la reforma social en Costa Rica.</p>
+                <div class="answer-container answer-container-3"></div>
+            </div>
+
+            <div class="question">
+                <p class="question-text">¿Cuál fue una de las razones por las que el sector privado se opuso a las reformas sociales de Calderón Guardia?</p>
+                <div class="options">
+                    <label><input type="checkbox" name="q14" value="1"> Porque reducían los salarios</label><br>
+                    <label><input type="checkbox" name="q14" value="2"> Porque debían contribuir económicamente</label><br>
+                    <label><input type="checkbox" name="q14" value="3"> Porque eliminaban el comercio internacional</label><br>
+                </div>
+                <button type="button" onclick="checkAnswer('q14', ['2'])">Revisar Respuesta</button>
+                <h id="result-q14"></h>
+            </div>
+
+            <!-- Pregunta 16: Emparejamiento -->
+            <div class="question">
+                <p class="question-text">Relacione los hechos con su impacto en Costa Rica.</p>
+                <div class="columns">
+                    <div class="column column-left">
+                        <ul id="left-column-q15" data-question="q15">
+                            <li data-id="A" data-label="A" style="--color: #5f97b5;">Segunda Guerra Mundial</li>
+                            <li data-id="B" data-label="B" style="--color: #a58e72;">Estado Benefactor</li>
+                            <li data-id="C" data-label="C" style="--color: #7a9b79;">Huelga de brazos caídos</li>
+                            <li data-id="D" data-label="D" style="--color: #b16e70;">Reformas Sociales</li>
+                        </ul>
+                    </div>
+                    <div class="column column-right" data-question="q15">
+                        <ul id="right-column-q15">
+                            <li data-id="1">Favoreció la inversión de Estados Unidos, pero afectó el comercio con Europa.</li>
+                            <li data-id="2">Sistema de bienestar con acceso a salud, educación y seguridad social.</li>
+                            <li data-id="3">Protesta para exigir garantías electorales.</li>
+                            <li data-id="4">Creación del Código de Trabajo y la Caja Costarricense del Seguro Social.</li>
+                        </ul>
+                    </div>
+                </div>
+                <button onclick="checkMatching('q15', [['A', '1'], ['B', '2'], ['C', '3'], ['D', '4']], 'result-q15')">Revisar Respuesta</button>
+                <h id="result-q15"></h>
+            </div>
+
+            <!-- Pregunta 17: Respuesta Corta -->
+            <div class="question">
+                <p class="question-text">Mencione dos factores externos que contribuyeron a la crisis económica en Costa Rica durante la Segunda Guerra Mundial.</p>
+                <div class="answer-container answer-container-2"></div>
+            </div>
+
+            <!-- Pregunta 18: Desarrollo -->
+            <div class="question">
+                <p class="question-text">Explique la razón y consecuencias de la persecución de alemanes, italianos y japoneses en Costa Rica durante la Segunda Guerra Mundial.</p>
+                <div class="answer-container answer-container-1"></div>
+            </div>
+
+            <!-- Pregunta 19: Selección -->
+            <div class="question">
+                <p class="question-text">¿Cuál de los siguientes fue un efecto del Estado Neoliberal en Costa Rica?</p>
+                <div class="options">
+                    <label><input type="checkbox" name="q18" value="1"> Aumento de la intervención estatal</label><br>
+                    <label><input type="checkbox" name="q18" value="2"> Privatización de empresas estatales</label><br>
+                    <label><input type="checkbox" name="q18" value="3"> Expansión de los programas de bienestar social</label><br>
+                </div>
+                <button type="button" onclick="checkAnswer('q18', ['2'])">Revisar Respuesta</button>
+                <h id="result-q18"></h>
+            </div>
+
+            <!-- Pregunta 20: Selección -->
+            <div class="question">
+                <p class="question-text">¿Qué presidente costarricense fue expulsado del país en 1942 por criticar al gobierno?</p>
+                <div class="options">
+                    <label><input type="checkbox" name="q19" value="1"> Rafael Ángel Calderón Guardia</label><br>
+                    <label><input type="checkbox" name="q19" value="2"> Teodoro Picado</label><br>
+                    <label><input type="checkbox" name="q19" value="3"> José Figueres Ferrer</label><br>
+                </div>
+                <button type="button" onclick="checkAnswer('q19', ['3'])">Revisar Respuesta</button>
+                <h id="result-q19"></h>
+            </div>
+
+            <!-- Pregunta 20: Selección -->
+            <div class="question">
+                <p class="question-text">¿Cuáles fueron los objetivos de la huelga de brazos caídos? (Seleccione dos)</p>
+                <div class="options">
+                    <label><input type="checkbox" name="q20" value="1"> Exigir al Gobierno garantías sociales</label><br>
+                    <label><input type="checkbox" name="q20" value="2"> Aumentar las oportunidades de empleo</label><br>
+                    <label><input type="checkbox" name="q20" value="3"> Aceptar la declaración de elecciones que hiciera el tribunal</label><br>
+                    <label><input type="checkbox" name="q20" value="4"> Exigir la participación de los patronos en las reformas sociales</label><br>
+                    <label><input type="checkbox" name="q20" value="5"> Que Costa Rica clasificara al mundial de Italia 90</label><br>
+                </div>
+                <button type="button" onclick="checkAnswer('q20', ['1','3'])">Revisar Respuesta</button>
+                <h id="result-q20"></h>
+            </div>
+
+            <!-- Pregunta 24: Selección -->
+            <div class="question">
+                <p class="question-text">Durante la década de 1940, ¿qué modelo económico adoptó Costa Rica?</p>
+                <div class="options">
+                    <label><input type="checkbox" name="q21" value="1"> Estado Liberal</label><br>
+                    <label><input type="checkbox" name="q21" value="2"> Estado Benefactor</label><br>
+                    <label><input type="checkbox" name="q21" value="3"> Estado Neoliberal</label><br>
+                </div>
+                <button type="button" onclick="checkAnswer('q21', ['2'])">Revisar Respuesta</button>
+                <h id="result-q21"></h>
+            </div>
+
+            <!-- Pregunta 25: Selección -->
+            <div class="question">
+                <p class="question-text">¿Cuál de las siguientes fue una medida implementada en la década de 1940 para mejorar la calidad de vida?</p>
+                <div class="options">
+                    <label><input type="checkbox" name="q22" value="1"> Eliminación de la inversión en obras públicas</label><br>
+                    <label><input type="checkbox" name="q22" value="2"> Aumento de capital para obras públicas</label><br>
+                    <label><input type="checkbox" name="q22" value="3"> Exención de impuestos para la clase trabajadora</label><br>
+                </div>
+                <button type="button" onclick="checkAnswer('q22', ['2'])">Revisar Respuesta</button>
+                <h id="result-q22"></h>
+            </div>
+
+            <div class="question">
+                <p class="question-text">¿Cuáles fueron dos razones por las que las soluciones implementadas en la década de 1940 no fueron efectivas?</p>
+                <div class="options">
+                    <label><input type="checkbox" name="q23" value="1"> Aumento del desempleo</label><br>
+                    <label><input type="checkbox" name="q23" value="2"> Mayores impuestos para los pobres</label><br>
+                    <label><input type="checkbox" name="q23" value="3"> Eliminación de la inversión en obras públicas</label><br>
+                    <label><input type="checkbox" name="q23" value="4"> Los exportadores ricos no pagaban impuestos</label><br>
+                </div>
+                <button type="button" onclick="checkAnswer('q23', ['2', '4'])">Revisar Respuesta</button>
+                <h id="result-q23"></h>
+            </div>
+
+            <!-- Pregunta 29: Selección múltiple -->
+            <div class="question">
+                <p class="question-text">¿Qué sectores fueron afectados por las políticas económicas de la década de 1940? (Seleccione 2)</p>
+                <div class="options">
+                    <label><input type="checkbox" name="q24" value="1"> Productores rurales</label><br>
+                    <label><input type="checkbox" name="q24" value="2"> Obreros de la incipiente industria</label><br>
+                    <label><input type="checkbox" name="q24" value="3"> Grandes exportadores de café y banano</label><br>
+                    <label><input type="checkbox" name="q24" value="4"> Esclavos negros</label><br>
+                </div>
+                <button type="button" onclick="checkAnswer('q24', ['1', '2'])">Revisar Respuesta</button>
+                <h id="result-q24"></h>
+            </div>
+
+            <div class="question">
+                <p class="question-text">¿Cuál fue una de las principales demandas de los sectores molestos en la década de 1940?</p>
+                <div class="options">
+                    <label><input type="checkbox" name="q25" value="1"> Acceso a vivienda y estabilidad laboral</label><br>
+                    <label><input type="checkbox" name="q25" value="2"> Aumento de impuestos a los sectores rurales</label><br>
+                    <label><input type="checkbox" name="q25" value="3"> Eliminación del salario mínimo</label><br>
+                </div>
+                <button type="button" onclick="checkAnswer('q25', ['1'])">Revisar Respuesta</button>
+                <h id="result-q25"></h>
+            </div>
+
+            <div class="question">
+                <p class="question-text">¿Qué aspectos implicaba la política intervencionista del Estado? (Seleccione 2)</p>
+                <div class="options">
+                    <label><input type="checkbox" name="q26" value="1"> Aceptación de entradas de capitales europeos</label><br>
+                    <label><input type="checkbox" name="q26" value="2"> Expropiación de propiedades a la burguesía alemana e italiana</label><br>
+                    <label><input type="checkbox" name="q26" value="3"> Regulación de precio del café, banano, caña de azúcar</label><br>
+                    <label><input type="checkbox" name="q26" value="4"> Los martes Rafael Ángel Calderón Guardia invitaba a comer cantonés</label><br>
+                </div>
+                <button type="button" onclick="checkAnswer('q26', ['2','3'])">Revisar Respuesta</button>
+                <h id="result-q26"></h>
+            </div>
+
+            <!-- Pregunta 17: Respuesta Corta -->
+            <div class="question">
+                <p class="question-text">Mencione dos aspectos implementados en la reforma financiera y tributaria.</p>
+                <div class="answer-container answer-container-2"></div>
+            </div>
+
+    </div>    
+
+
+        <script>
+
+            function generateInputFields(containerClass, numFields) {
+                // Selecciona todos los contenedores con la misma clase
+                const containers = document.querySelectorAll(`.${containerClass}`);
+
+                containers.forEach(container => {
+                    container.innerHTML = ""; // Limpia el contenido previo
+
+                    for (let i = 0; i < numFields; i++) {
+                        const input = document.createElement("input");
+                        input.type = "text";
+                        input.classList.add("answer-box");
+                        input.placeholder = `Respuesta ${i + 1}`;
+                        container.appendChild(input);
+                    }
+                });
+            }
+
+            // Generar los campos de entrada en todas las preguntas
+            generateInputFields('answer-container-1', 1);
+            generateInputFields('answer-container-2', 2);
+            generateInputFields('answer-container-3', 3);
+            generateInputFields('answer-container-4', 4);
+
+
+            // Función para mezclar un array
+            function shuffle(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+
+             // Inicializar el cuestionario según el modo seleccionado
+            function initializeQuiz(orderType) {
+                const questionsContainer = document.getElementById('questions-container');
+                const questions = Array.from(questionsContainer.children);
+
+                if (orderType === 'random' || orderType === 'tryhard') {
+                    shuffle(questions); // Mezclar preguntas si se selecciona aleatorio o modo tryhard
+                }
+
+                questions.forEach((question, index) => {
+                    // Reinsertar las preguntas en el contenedor
+                    questionsContainer.appendChild(question);
+
+                    // Numerar las preguntas
+                    const questionText = question.querySelector('.question-text');
+                    questionText.innerHTML = `<strong>${index + 1}.</strong> ${questionText.textContent}`;
+
+                    if (orderType === 'tryhard') {
+                        shuffleOptions(question); // Mezclar opciones solo en modo Tryhard
+                    }
+                });
+
+                // Ocultar menú de selección y mostrar cuestionario
+                document.getElementById('order-selection').style.display = 'none';
+                document.getElementById('quiz-container').style.display = 'block';
+            }
+
+            // Mezclar las opciones dentro de cada pregunta
+            function shuffleOptions(question) {
+                // Para preguntas de selección múltiple
+                const optionsContainer = question.querySelector('.options');
+                if (optionsContainer) {
+                    // Eliminar todos los <br> innecesarios
+                    const breaks = optionsContainer.querySelectorAll('br');
+                    breaks.forEach(br => br.remove());
+
+                    // Seleccionar solo nodos de tipo ELEMENT_NODE (etiquetas válidas)
+                    const options = Array.from(optionsContainer.children).filter(option => option.nodeType === Node.ELEMENT_NODE);
+
+                    // Aplicar el espaciado entre las opciones
+                    options.forEach(option => {
+                        option.style.marginBottom = '10px'; // Aquí controlamos el espaciado entre cada opción
+                    });
+
+                    // Mezclar solo los elementos válidos
+                    shuffle(options);
+
+                    options.forEach(option => optionsContainer.appendChild(option));
+                }
+
+                // Para preguntas de emparejamiento
+                const rightColumn = question.querySelector('.column-right ul');
+                if (rightColumn) {
+                    const rightItems = Array.from(rightColumn.children);
+                    shuffle(rightItems);
+                    rightItems.forEach(item => rightColumn.appendChild(item));
+                }
+            }
+
+            let correctAnswersCount = 0;  // Contador de respuestas correctas
+            const totalQuestions = 137;  // Total de preguntas en el cuestionario
+            const answeredQuestions = {};  // Objeto para guardar el estado de cada pregunta
+
+
+
+            // Función para comprobar la respuesta individual de cada pregunta
+            function checkAnswer(question, correctOptions, questionId) {
+                // Reiniciar el color de todas las casillas de la pregunta actual
+
+                if (answeredQuestions[question]) {
+                    return; // Salir de la función si la pregunta ya se revisó
+                }
+
+
+                const questionElements = document.querySelectorAll(`#${questionId} .options input`);
+                questionElements.forEach(input => {
+                    const label = input.parentElement;
+                    label.classList.remove('correct', 'incorrect'); // Limpiar los colores
+                });
+
+                const selectedOptions = Array.from(document.querySelectorAll(`input[name="${question}"]:checked`)).map(el => el.value);
+                const resultMessage = document.getElementById(`result-${question}`);
+                resultMessage.innerHTML = '';  // Limpiar el mensaje anterior
+
+                // Comprobación si la respuesta es correcta
+                let isCorrect = selectedOptions.length === correctOptions.length && selectedOptions.every(option => correctOptions.includes(option));
+
+                // Resetear el puntaje de la pregunta
+                let previousScore = answeredQuestions[question] || 0;
+                if (isCorrect) {
+                    correctAnswersCount += 1 - previousScore;  // Sumar solo si la respuesta es correcta
+                } else {
+                    correctAnswersCount -= previousScore;  // Restar solo si la respuesta estaba correcta antes
+                }
+
+                // Recorre las opciones seleccionadas
+                selectedOptions.forEach(option => {
+                    const optionLabel = document.querySelector(`input[name="${question}"][value="${option}"]`).parentElement;
+                    
+                    if (correctOptions.includes(option)) {
+                        optionLabel.classList.add('correct');
+                    } else {
+                        optionLabel.classList.add('incorrect');
+                    }
+                });
+
+                // Si la respuesta es incorrecta, resaltar las correctas en verde opaco
+                if (!isCorrect) {
+                    correctOptions.forEach(option => {
+                        const label = document.querySelector(`input[name="${question}"][value="${option}"]`).parentElement;
+                        label.classList.add('highlight-correct');
+                    });
+                }
+
+                // Mostrar el resultado general de la pregunta
+                if (isCorrect) {
+                    resultMessage.innerHTML += '<span class="correct">¡La respuesta es correcta!</span>';
+                    answeredQuestions[question] = 1;  // Guardar que la respuesta es correcta
+                } else if (selectedOptions.length > 0) {
+                    resultMessage.innerHTML += '<span class="incorrect">Algunas respuestas seleccionadas son incorrectas. Revisa tus opciones.</span>';
+                    answeredQuestions[question] = 0;  // Guardar que la respuesta es incorrecta
+                } else {
+                    resultMessage.innerHTML += '<span class="incorrect">No se seleccionaron respuestas.</span>';
+                    answeredQuestions[question] = 0;  // Guardar que no se seleccionó respuesta
+                }
+
+
+                // Bloquear las opciones y el botón
+                document.querySelectorAll(`input[name="${question}"]`).forEach(input => input.disabled = true);
+               
+
+                // Marcar la pregunta como respondida
+                answeredQuestions[question] = true;     
+
+
+                // Mostrar el total de respuestas correctas y calcular la nota
+                updateTotalScore();
+            }
+
+            // Función para actualizar el puntaje total
+            function updateTotalScore() {
+                const percentage = (correctAnswersCount / totalQuestions) * 100;
+                document.getElementById('result').innerHTML = `Total de respuestas correctas: ${correctAnswersCount} de ${totalQuestions}.<br>Nota: ${percentage.toFixed(2)}%`;
+            }
+
+            const questionPairs = new Map(); // Almacena los pares por pregunta
+
+            function initializeSelection(question) {
+                const leftColumn = document.querySelector(`#left-column-${question}`);
+                const rightColumn = document.querySelector(`#right-column-${question}`);
+                const pairs = new Map(); // Pares específicos de la pregunta
+                questionPairs.set(question, pairs);
+                let selectedLeft = null;
+
+                // Verificar si las columnas existen antes de añadir eventos
+                if (!leftColumn || !rightColumn) {
+                    console.error(`No se encontraron columnas para la pregunta "${question}"`);
+                    return;
+                }
+
+                // Selección de un elemento de la izquierda
+                leftColumn.addEventListener("click", (e) => {
+                    if (e.target.tagName === "LI") {
+                        if (selectedLeft === e.target) {
+                            e.target.classList.remove("selected");
+                            selectedLeft = null;
+                        } else {
+                            if (selectedLeft) selectedLeft.classList.remove("selected");
+                            selectedLeft = e.target;
+                            e.target.classList.add("selected");
+                        }
+                    }
+                });
+
+                // Selección de un elemento de la derecha
+                rightColumn.addEventListener("click", (e) => {
+                    if (e.target.tagName === "LI" && selectedLeft) {
+                        const leftId = selectedLeft.getAttribute("data-id");
+                        const rightId = e.target.getAttribute("data-id");
+
+                        // Eliminar enlaces previos del lado derecho
+                        for (let [key, value] of pairs.entries()) {
+                            if (value === rightId) {
+                                pairs.delete(key);
+                                const prevRightEl = rightColumn.querySelector(`li[data-id="${value}"]`);
+                                prevRightEl.style.removeProperty("--color");
+                                prevRightEl.classList.remove("highlighted");
+                            }
+                        }
+
+                        // Eliminar enlaces previos del lado izquierdo
+                        if (pairs.has(leftId)) {
+                            const prevRightId = pairs.get(leftId);
+                            const prevRightEl = rightColumn.querySelector(`li[data-id="${prevRightId}"]`);
+                            prevRightEl.style.removeProperty("--color");
+                            prevRightEl.classList.remove("highlighted");
+                        }
+
+                        // Crear nuevo enlace
+                        pairs.set(leftId, rightId);
+                        selectedLeft.classList.remove("selected");
+                        selectedLeft = null;
+
+                        // Asignar color al nuevo enlace
+                        const color = getComputedStyle(leftColumn.querySelector(`li[data-id="${leftId}"]`)).getPropertyValue("--color");
+                        e.target.style.setProperty("--color", color);
+                        e.target.classList.add("highlighted");
+                    }
+                });
+            }
+
+            function checkMatching(question, correctPairs, resultId) {
+                const resultMessage = document.getElementById(resultId);
+                resultMessage.innerHTML = ""; // Limpiar mensaje anterior
+                let isCorrect = true;
+                const pairs = questionPairs.get(question); // Obtener los pares de la pregunta actual
+
+                correctPairs.forEach(([left, right]) => {
+                    const selectedRight = pairs.get(left); // Obtener la respuesta seleccionada para el ítem izquierdo
+                    const leftItem = document.querySelector(`#left-column-${question} li[data-id="${left}"]`);
+                    const rightItem = document.querySelector(`#right-column-${question} li[data-id="${right}"]`);
+
+                    // Crear el círculo para indicar la respuesta
+                    const circle = document.createElement("span");
+                    circle.classList.add("result-mark");
+
+                    // Verificar si los elementos existen antes de acceder a sus propiedades
+                    if (leftItem && rightItem) {
+                        if (selectedRight === right) {
+                            rightItem.classList.add("correct"); // Respuesta correcta
+                            circle.classList.add("correct");
+                            const leftCircle = leftItem.cloneNode(true); // Crea una copia del item izquierdo
+                            leftCircle.classList.add('highlighted'); // Marcarlo para que se vea como seleccionado
+                            leftCircle.style.border = "5px solid white"; // Establecer el borde blanco
+                            rightItem.appendChild(leftCircle); // Añadir la copia en la columna derecha
+                        } else {
+                            rightItem.classList.add("incorrect"); // Respuesta incorrecta
+                            circle.classList.add("incorrect");
+                            const leftCircle = leftItem.cloneNode(true); // Crea una copia del item izquierdo
+                            leftCircle.classList.add('highlighted'); // Marcarlo para que se vea como seleccionado
+                            leftCircle.style.border = "5px solid white"; // Establecer el borde blanco
+                            rightItem.appendChild(leftCircle); // Añadir la copia en la columna derecha
+                            isCorrect = false;
+                        }
+                    } else {
+                        console.error(`Elemento no encontrado: leftItem(${left}) o rightItem(${right})`);
+                        isCorrect = false;
+                    }
+
+                    // Insertar el círculo al inicio del elemento en la columna derecha
+                    rightItem.insertBefore(circle, rightItem.firstChild);
+                    
+                });
+
+                // Mostrar resultado
+                if (isCorrect) {
+                    correctAnswersCount++;
+                    resultMessage.innerHTML = "<span class='correct'>¡La respuesta es correcta!</span>";
+                } else {
+                    resultMessage.innerHTML = "<span class='incorrect'>Algunas respuestas no coinciden. Revisa los pares.</span>";
+                }
+
+                // Bloquear las columnas solo para la pregunta actual
+                document.querySelectorAll(`#left-column-${question} li`).forEach(item => {
+                    item.style.pointerEvents = "none"; // Desactivar interacción con los elementos
+                    item.style.opacity = "0.8"; // Efecto visual de desactivado
+                });
+
+                document.querySelectorAll(`#right-column-${question} li`).forEach(item => {
+                    item.style.pointerEvents = "none"; // Desactivar interacción con los elementos
+                    item.style.opacity = "0.8"; // Efecto visual de desactivado
+                });
+
+                // Bloquear el botón de revisión de la pregunta
+                const button = document.querySelector(`button[onclick*="checkMatching('${question}'"]`);
+                if (button) button.disabled = true;
+
+                // Actualizar puntaje
+                updateTotalScore();
+            }
+
+            // Inicializa todas las preguntas al cargar la página
+            document.addEventListener("DOMContentLoaded", () => {
+                ['q3','q8','q12','q15'].forEach(question => initializeSelection(question));
+                document.getElementById('order-selection').style.display = 'block';
+            });
+
+        </script>
+    </div>
+</body>
+</html>
